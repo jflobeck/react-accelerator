@@ -1,23 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 
 import "./Sidebar.css";
 
 const Sidebar = (props) => {
-  const [createNote, setCreateNote] = useState(false);
-
-  const handleCreateNoteBtn = () => {
-    setCreateNote(true);
-    console.log(createNote);
-  };
-
   return (
     <aside className="sidebar">
       <button
         type="button"
-        className="button block tertiary header-text"
-        onClick={handleCreateNoteBtn}
+        className={`button block header-text ${
+          props.isFormOpen ? "secondary" : "tertiary"
+        }`}
+        // className="button block tertiary header-text"
+        onClick={props.onCreateBtn}
       >
-        Create Note
+        {props.isFormOpen ? "Close" : "Create Note"}
       </button>
       <ul>
         {props.notes.map((note, i) => (

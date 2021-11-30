@@ -2,9 +2,9 @@
 
 //start with addition and push to existing state
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const Form = () => {
+const Form = (props) => {
   const [enteredTitle, setEnteredTitle] = useState("");
   const [enteredBody, setEnteredBody] = useState("");
   const [enteredDate, setEnteredDate] = useState("");
@@ -17,20 +17,31 @@ const Form = () => {
     setEnteredBody(event.target.value);
   };
 
-  const dateChangeHandler = () => {
-    setEnteredDate(new Date());
-  };
-
   const submitHandler = (event) => {
     event.preventDefault();
 
     const enteredNoteData = {
       header: enteredTitle,
       body: enteredBody,
-      timestamp: "Last Updated: " + enteredDate,
+      timestamp: "Last Updated: " + new Date().toUTCString(),
     };
-    console.log(enteredNoteData);
+    // console.log(enteredNoteData);
+    props.onSave(enteredNoteData);
   };
+
+  const populateEditForm = () => {
+    setEnteredTitle(props.selectedNote.header);
+    setEnteredBody(props.selectedNote.body);
+    setEnteredDate(props.selectedNote.timestamp);
+    console.log(enteredTitle, enteredBody, enteredDate);
+  };
+
+  useEffect(() => {
+    if (props.isEditing) {
+      populateEditForm();
+    }
+  }, [props.isEditing]);
+
   return (
     <form onSubmit={submitHandler}>
       <div>
@@ -41,9 +52,7 @@ const Form = () => {
         <label>Note Body</label>
         <input type="text" value={enteredBody} onChange={bodyChangeHandler} />
       </div>
-      <button type="submit" onClick={dateChangeHandler}>
-        Save
-      </button>
+      <button type="submit">Save</button>
     </form>
   );
 };

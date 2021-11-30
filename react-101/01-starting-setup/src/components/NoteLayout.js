@@ -5,7 +5,25 @@ import Sidebar from "./Sidebar";
 import SelectedNote from "./SelectedNote";
 import Form from "./Form";
 
-const NoteLayout = () => {
+const NoteLayout = (props) => {
+  const [isEditing, setIsEditing] = useState(false);
+
+  // const toggleEditing = () => {
+  //   setIsEditing(!isEditing);
+  //   setIsFormOpen(!isFormOpen);
+  //   console.log("editing is set to: ", isEditing);
+  // };
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  //handleformopen
+  const toggleFormOpen = (options) => {
+    if (options?.edit === true) {
+      setIsEditing(true);
+    } else {
+      setIsEditing(false);
+    }
+    setIsFormOpen(!isFormOpen);
+  };
+
   const [notes, setNotes] = useState([
     {
       header: "My Special Note 1",
@@ -29,7 +47,7 @@ const NoteLayout = () => {
   const handleNotesSelect = (i) => {
     setActiveNoteIndex(i);
   };
-  //this handler filters out the currently display note once on click fires on delete btn
+  //this handler filters out the currently displayed note once on click fires on delete btn
   const handleDeletedNote = () => {
     const newNotes = notes.filter(
       (note) => note.header !== notes[activeNoteIndex].header
@@ -37,18 +55,53 @@ const NoteLayout = () => {
     setNotes(newNotes);
   };
 
-  
-
   //Delete & edit functions and pass as prop to selected note
+  const handleNewNote = (enteredNoteData) => {
+    // console.log(enteredNoteData);
+    const addNewNote = [...notes];
+    addNewNote.push(enteredNoteData);
+    setNotes(addNewNote);
+    setIsFormOpen(!isFormOpen);
+  };
+
+  const updateNote = (data) => {
+    const prevState = notes;
+    //get active note from prevState
+    //update note with edited values
+    prevState[activeNoteIndex] = data;
+    //replace notes state with ammended prevState
+    setNotes(prevState);
+    setIsFormOpen(!isFormOpen);
+  };
+  const handleSave = (formData) => {
+    if (isEditing) {
+      updateNote(formData);
+    } else {
+      handleNewNote(formData);
+    }
+  };
 
   return (
     <section className="layout">
-      <Sidebar notes={notes} onNoteSelect={handleNotesSelect} />
-      <SelectedNote
-        selectedNote={notes[activeNoteIndex]}
-        onNoteDelete={handleDeletedNote}
+      <Sidebar
+        notes={notes}
+        onNoteSelect={handleNotesSelect}
+        onCreateBtn={toggleFormOpen}
+        isFormOpen={isFormOpen}
       />
-      <Form />
+      {isFormOpen ? (
+        <Form
+          onSave={handleSave}
+          selectedNote={notes[activeNoteIndex]}
+          isEditing={isEditing}
+        />
+      ) : (
+        <SelectedNote
+          selectedNote={notes[activeNoteIndex]}
+          onNoteDelete={handleDeletedNote}
+          onEditBtnClick={() => toggleFormOpen({ edit: true })}
+        />
+      )}
     </section>
   );
 };

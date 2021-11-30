@@ -9,7 +9,11 @@ const SelectedNote = (props) => {
           {props.selectedNote.timestamp}
         </p>
         <div className="button-group">
-          <button type="button" className="button primary header-text">
+          <button
+            type="button"
+            className="button primary header-text"
+            onClick={props.onEditBtnClick}
+          >
             Edit Note
           </button>
           <button
