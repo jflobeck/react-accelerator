@@ -1,0 +1,12 @@
+@import url("https://fonts.googleapis.com/css?family=Aleo:400,400i|Poppins:700&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+html {
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  margin: 0;
+}

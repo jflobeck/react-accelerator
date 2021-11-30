@@ -1,0 +1,56 @@
+.header-text {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  color: #100007;
+  letter-spacing: 1px;
+}
+
+.body-text {
+  font-family: "Aleo", serif;
+  font-weight: 400;
+  color: #535353;
+}
+
+.muted {
+  font-size: 0.8rem;
+}
+
+.no-margin {
+  margin: 0;
+}
+.button-group .button {
+  margin-left: 1rem;
+}
+
+article {
+  max-width: 640px;
+  margin: 1rem auto;
+}
+
+/* Button Styling */
+.button {
+  border: none;
+  border-radius: 0;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  color: #fff;
+  text-transform: uppercase;
+  background: #535353;
+}
+
+.button.block {
+  display: block;
+  width: 100%;
+}
+
+.button.primary {
+  background: #3fa7d6;
+}
+
+.button.secondary {
+  background: #ee6352;
+}
+
+.button.tertiary {
+  background: #59cd90;
+}
