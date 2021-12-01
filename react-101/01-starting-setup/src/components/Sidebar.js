@@ -1,31 +1,35 @@
 import React from "react";
+import { getHumanDate } from "./NoteLayout";
 
 import "./Sidebar.css";
 
-const Sidebar = (props) => {
+const Sidebar = ({ activeNoteIndex, notes, onNoteSelect, onCreateBtn, isFormOpen }) => {
   return (
     <aside className="sidebar">
       <button
         type="button"
+        onClick={onCreateBtn}
         className={`button block header-text ${
-          props.isFormOpen ? "secondary" : "tertiary"
+          isFormOpen ? "secondary" : "tertiary"
         }`}
-        // className="button block tertiary header-text"
-        onClick={props.onCreateBtn}
       >
-        {props.isFormOpen ? "Close" : "Create Note"}
+        {isFormOpen ? "Close" : "Create Note"}
       </button>
+
       <ul>
-        {props.notes.map((note, i) => (
-          <li
-            className="active"
-            key={note.header}
-            onClick={() => props.onNoteSelect(i)}
-          >
-            <h3 className="header-text no-margin">{note.header}</h3>
-            <p className="body-text no-margin muted">{note.timestamp}</p>
-          </li>
-        ))}
+        {notes.map((note, i) => {
+          const { title, timestamp } = note;
+          return (
+            <li
+              className={i === activeNoteIndex ? "active" : ""}
+              key={timestamp}
+              onClick={() => onNoteSelect(i)}
+            >
+              <h3 className="header-text no-margin">{title}</h3>
+              <p className="body-text no-margin muted">{getHumanDate(timestamp)}</p>
+            </li>
+          )}
+        )}
       </ul>
     </aside>
   );

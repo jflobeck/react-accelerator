@@ -1,21 +1,31 @@
 import React, { useState } from "react";
 
-import "./NoteLayout.css";
 import Sidebar from "./Sidebar";
 import SelectedNote from "./SelectedNote";
 import Form from "./Form";
 
-const NoteLayout = (props) => {
-  const [isEditing, setIsEditing] = useState(false);
+import "./NoteLayout.css";
 
-  // const toggleEditing = () => {
-  //   setIsEditing(!isEditing);
-  //   setIsFormOpen(!isFormOpen);
-  //   console.log("editing is set to: ", isEditing);
-  // };
+export const getHumanDate = iso => {
+  const date = new Date(iso);
+
+  return `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`
+}
+
+const NoteLayout = () => {
+  const [notes, setNotes] = useState([
+    {
+      id: "7b06-31d2-d55c-8c45",
+      timestamp: "2021-11-30T23:19:12.857Z",
+      title: "My Special Note 1",
+      body: "1 might remember the Dell computer commercials in which a youth reports this exciting news to his friends that they are about to get their new computer by telling them, “Dude, you’re getting a Dell!” It was a cute series but it reflects the excitement young people get about anything new, particularly if it’s a new machine.",
+    },
+  ]);
+  const [isEditing, setIsEditing] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  //handleformopen
-  const toggleFormOpen = (options) => {
+  const [activeNoteIndex, setActiveNoteIndex] = useState(0);
+
+  const toggleFormOpen = options => {
     if (options?.edit === true) {
       setIsEditing(true);
     } else {
@@ -24,71 +34,44 @@ const NoteLayout = (props) => {
     setIsFormOpen(!isFormOpen);
   };
 
-  const [notes, setNotes] = useState([
-    {
-      header: "My Special Note 1",
-      timestamp: "Last Updated: 1:37PM 7/26/19",
-      body: "1 might remember the Dell computer commercials in which a youth reports this exciting news to his friends that they are about to get their new computer by telling them, “Dude, you’re getting a Dell!” It was a cute series but it reflects the excitement young people get about anything new, particularly if it’s a new machine.",
-    },
-    {
-      header: "My Special Note 2",
-      timestamp: "Last Updated: 1:37PM 7/26/20",
-      body: "2 might remember the Dell computer commercials in which a youth reports this exciting news to his friends that they are about to get their new computer by telling them, “Dude, you’re getting a Dell!” It was a cute series but it reflects the excitement young people get about anything new, particularly if it’s a new machine.",
-    },
-    {
-      header: "My Special Note 3",
-      timestamp: "Last Updated: 1:37PM 7/26/20",
-      body: "3 might remember the Dell computer commercials in which a youth reports this exciting news to his friends that they are about to get their new computer by telling them, “Dude, you’re getting a Dell!” It was a cute series but it reflects the excitement young people get about anything new, particularly if it’s a new machine.",
-    },
-  ]);
-  //active note state and handler to display the click on note in main pane
-  const [activeNoteIndex, setActiveNoteIndex] = useState(0);
-
-  const handleNotesSelect = (i) => {
-    setActiveNoteIndex(i);
+  const createNote = data => {
+    setNotes(prevState => [...prevState, data]);
+    setIsFormOpen(false);
+    setActiveNoteIndex(notes.length)
   };
-  //this handler filters out the currently displayed note once on click fires on delete btn
-  const handleDeletedNote = () => {
+  /**
+   * TODO: Look for best practice react update pattern.
+   */
+  const updateNote = data => {
+    const notesNotToUpdate = notes.filter(note => note.id !== data.id);
+    setNotes([...notesNotToUpdate, data])
+    setIsFormOpen(false);
+  };
+  const deleteNote = () => {
     const newNotes = notes.filter(
-      (note) => note.header !== notes[activeNoteIndex].header
+      note => note.title !== notes[activeNoteIndex].title
     );
     setNotes(newNotes);
   };
 
-  //Delete & edit functions and pass as prop to selected note
-  const handleNewNote = (enteredNoteData) => {
-    // console.log(enteredNoteData);
-    const addNewNote = [...notes];
-    addNewNote.push(enteredNoteData);
-    setNotes(addNewNote);
-    setIsFormOpen(!isFormOpen);
-  };
-
-  const updateNote = (data) => {
-    const prevState = notes;
-    //get active note from prevState
-    //update note with edited values
-    prevState[activeNoteIndex] = data;
-    //replace notes state with ammended prevState
-    setNotes(prevState);
-    setIsFormOpen(!isFormOpen);
-  };
-  const handleSave = (formData) => {
+  const handleSave = formData => {
     if (isEditing) {
       updateNote(formData);
     } else {
-      handleNewNote(formData);
+      createNote(formData);
     }
   };
 
   return (
     <section className="layout">
       <Sidebar
+        activeNoteIndex={activeNoteIndex}
         notes={notes}
-        onNoteSelect={handleNotesSelect}
+        onNoteSelect={i => setActiveNoteIndex(i)}
         onCreateBtn={toggleFormOpen}
         isFormOpen={isFormOpen}
       />
+      
       {isFormOpen ? (
         <Form
           onSave={handleSave}
@@ -98,8 +81,8 @@ const NoteLayout = (props) => {
       ) : (
         <SelectedNote
           selectedNote={notes[activeNoteIndex]}
-          onNoteDelete={handleDeletedNote}
-          onEditBtnClick={() => toggleFormOpen({ edit: true })}
+          onDelete={deleteNote}
+          onEdit={() => toggleFormOpen({ edit: true })}
         />
       )}
     </section>

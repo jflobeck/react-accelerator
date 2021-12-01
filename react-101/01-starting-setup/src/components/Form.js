@@ -1,57 +1,63 @@
-//build form separately but use to both create and edit notes
-
-//start with addition and push to existing state
-
 import React, { useEffect, useState } from "react";
 
-const Form = (props) => {
-  const [enteredTitle, setEnteredTitle] = useState("");
-  const [enteredBody, setEnteredBody] = useState("");
-  const [enteredDate, setEnteredDate] = useState("");
+const Form = ({ onSave, selectedNote, isEditing }) => {
+  const [formState, setFormState] = useState({
+    title: "",
+    body: "",
+  });
 
-  const titleChangeHandler = (event) => {
-    setEnteredTitle(event.target.value);
+  const handleFormChange = e => {
+    setFormState({
+      ...formState,
+      [e.target.name]: e.target.value
+    })
   };
 
-  const bodyChangeHandler = (event) => {
-    setEnteredBody(event.target.value);
-  };
+  const handleSubmit = e => {
+    e.preventDefault();
 
-  const submitHandler = (event) => {
-    event.preventDefault();
+    const getID = () => {
+      let s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+      return `${s4()}-${s4()}-${s4()}-${s4()}`
+    }
 
-    const enteredNoteData = {
-      header: enteredTitle,
-      body: enteredBody,
-      timestamp: "Last Updated: " + new Date().toUTCString(),
-    };
-    // console.log(enteredNoteData);
-    props.onSave(enteredNoteData);
-  };
-
-  const populateEditForm = () => {
-    setEnteredTitle(props.selectedNote.header);
-    setEnteredBody(props.selectedNote.body);
-    setEnteredDate(props.selectedNote.timestamp);
-    console.log(enteredTitle, enteredBody, enteredDate);
-  };
+    onSave({
+      ...formState,
+      id: isEditing ? formState.id : getID(),
+      timestamp: new Date().toISOString(),
+    });
+  }
 
   useEffect(() => {
-    if (props.isEditing) {
-      populateEditForm();
+    if (isEditing) {
+      setFormState(selectedNote);
     }
-  }, [props.isEditing]);
+  }, [isEditing, selectedNote]);
 
   return (
-    <form onSubmit={submitHandler}>
+    <form onSubmit={handleSubmit}>
       <div>
         <label>Note Title</label>
-        <input type="text" value={enteredTitle} onChange={titleChangeHandler} />
+        <input
+          type="text"
+          value={formState.title}
+          name="title"
+          onChange={e => handleFormChange(e)}
+          required
+        />
       </div>
       <div>
         <label>Note Body</label>
-        <input type="text" value={enteredBody} onChange={bodyChangeHandler} />
+        <textarea
+          type="text"
+          rows={10}
+          name="body"
+          value={formState.body}
+          onChange={e => handleFormChange(e)}
+          required
+        />
       </div>
+      
       <button type="submit">Save</button>
     </form>
   );
